@@ -32,7 +32,7 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 		return false, nil
 	}
 }
-func main() {
+func main1() {
 	//wg.Add(10)
 	//for i:=0;i<2;i++ {
 	//	go goroutine1(i)
