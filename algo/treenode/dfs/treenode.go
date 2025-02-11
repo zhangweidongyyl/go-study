@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+// 递归遍历
+
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode

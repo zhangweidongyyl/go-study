@@ -2,6 +2,8 @@ package bfs
 
 import "fmt"
 
+// 层序遍历
+
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
