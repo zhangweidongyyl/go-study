@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"reflect"
+	"study.com/study/algo/treenode/bfs"
 	"sync"
 )
 
@@ -32,41 +32,29 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 		return false, nil
 	}
 }
-func main1() {
-	//wg.Add(10)
-	//for i:=0;i<2;i++ {
-	//	go goroutine1(i)
+func main() {
+
+	//root := dfs.CreateMinDepthTree()
+	//res := dfs.FindAllPath(root)
+	//for index, path := range res {
+	//	fmt.Printf("path index is %d and path is %+v \r\n", index, path)
 	//}
-	//wg.Wait()
-	//fmt.Println("main goroutine done!")
-	s := make([]int, 0)
-	s = append(s, 1)
-	s = append(s, 2)
-	s = append(s, 3)
-	for k, v := range s {
-		fmt.Printf("k=%d\n", k)
-		fmt.Printf("v=%d\n", v)
-		fmt.Println("===")
-	}
 
-	userinfo := UserInfoStruct{
-		100, "gencozhang",
+	root := bfs.CreateMinDepthTree()
+	res := bfs.LevelOrderFindAllPath(root)
+	for index, path := range res {
+		fmt.Printf("path index is %d and path is %+v \r\n", index, path)
 	}
-	fmt.Println(reflect.TypeOf(userinfo))
-	fmt.Println(reflect.ValueOf(userinfo))
-	username, err := userinfo.getusername()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(username)
+	//minDepth := dfs.MinDepth(root)
+	//fmt.Println(minDepth)
+	//root := dfs.CreateTree()
+	//root.Traverse()
+	//root := bfs.CreateTree()
+	//bfs.LevelOrderTraverse1(root)
+	//bfs.LevelOrderTraverse2(root)
+	//bfs.LevelOrderTraverse3(root)
 
-	setflag, err := userinfo.setusername()
-	if err != nil {
-		fmt.Println(err)
-
-		return
-	}
-	fmt.Printf("set flag:%t \n", setflag)
+	//root := bfs.CreateMinDepthTree()
+	//fmt.Println(bfs.LevelOrderMinDepth(root))
 
 }
