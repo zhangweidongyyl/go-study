@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"study.com/study/algo/treenode/bfs"
+	"study.com/study/algo/treenode"
 	"sync"
 )
 
@@ -33,6 +33,12 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	treenode.PrintPq()
+	//ntreeroot := dfs.CreateNTree()
+	//dfs.TraverseNTree(ntreeroot)
+
+	//ntreeroot := bfs.CreateNTree()
+	//bfs.NtreeLevelOrderTraverse3(ntreeroot)
 
 	//root := dfs.CreateMinDepthTree()
 	//res := dfs.FindAllPath(root)
@@ -40,11 +46,11 @@ func main() {
 	//	fmt.Printf("path index is %d and path is %+v \r\n", index, path)
 	//}
 
-	root := bfs.CreateMinDepthTree()
-	res := bfs.LevelOrderFindAllPath(root)
-	for index, path := range res {
-		fmt.Printf("path index is %d and path is %+v \r\n", index, path)
-	}
+	//root := bfs.CreateMinDepthTree()
+	//res := bfs.LevelOrderFindAllPath(root)
+	//for index, path := range res {
+	//	fmt.Printf("path index is %d and path is %+v \r\n", index, path)
+	//}
 	//minDepth := dfs.MinDepth(root)
 	//fmt.Println(minDepth)
 	//root := dfs.CreateTree()

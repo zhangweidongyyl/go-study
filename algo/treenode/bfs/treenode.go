@@ -30,6 +30,24 @@ func CreateTree() *TreeNode {
 	return root
 }
 
+// CreateBstTree create a bst tree
+//
+//	      7
+//	4          9
+//
+// 1     5          10
+func CreateBstTree() *TreeNode {
+	root := &TreeNode{Val: 7}
+	root.Left = &TreeNode{Val: 4}
+	root.Right = &TreeNode{Val: 9}
+
+	root.Left.Left = &TreeNode{Val: 1}
+	root.Left.Right = &TreeNode{Val: 5}
+
+	root.Right.Right = &TreeNode{Val: 10}
+	return root
+}
+
 // LevelOrderTraverse1 无法知道当前节点所在的层次，无法计算二叉树的深度等，因此该种写法应用场景很少
 func LevelOrderTraverse1(root *TreeNode) {
 	if root == nil {
