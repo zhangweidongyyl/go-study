@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"study.com/study/algo/treenode"
+	"study.com/study/algo/linklist"
 	"sync"
 )
 
@@ -33,7 +33,19 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
-	treenode.PrintPq()
+	// linklist相关
+	//1、merge two link list
+
+	l1 := linklist.CreateLinkNode([]int{1, 3, 5})
+	l2 := linklist.CreateLinkNode([]int{2, 6, 9, 10, 14})
+	l3 := linklist.MergeTwoList(l1, l2)
+	//linklist.PrintLinkNode(l3)
+
+	// 2 、 partition link list
+	l4 := linklist.PartitionList(l3, 5)
+	linklist.PrintLinkNode(l4)
+
+	//treenode.PrintPq()
 	//ntreeroot := dfs.CreateNTree()
 	//dfs.TraverseNTree(ntreeroot)
 
