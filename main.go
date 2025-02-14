@@ -46,18 +46,29 @@ func main() {
 	//linklist.PrintLinkNode(l4)
 
 	//l1 := linklist.CreateLinkNode([]int{1, 3, 5})
-	l2 := linklist.CreateLinkNode([]int{2, 6, 9, 14, 8})
-
-	res := linklist.MiddleNode(l2)
-	linklist.PrintLinkNode(res)
+	//l2 := linklist.CreateLinkNode([]int{2, 6, 9, 14, 8})
+	//
+	//res := linklist.MiddleNode(l2)
+	//linklist.PrintLinkNode(res)
+	//
+	//l2Repeat := linklist.CreateLinkNode([]int{2, 2, 3, 6, 6, 8})
+	//
+	//resUniq := linklist.DeleteRepeat2(l2Repeat)
+	//linklist.PrintLinkNode(resUniq)
 	//res := linklist.RemoveFromEnd(l2, 2)
 	//linklist.PrintLinkNode(res)
-	//list := make([]*linklist.LinkNode, 0)
-	//list = append(list, l1, l2)
-	// merge k list 使用优先级队列 合并k个升序队列
-	//res := linklist.MergeKList(list)
+
+	l1 := linklist.CreateLinkNode([]int{1, 3, 5})
+	l2 := linklist.CreateLinkNode([]int{2, 6, 9, 14})
+	list := make([]*linklist.LinkNode, 0)
+	list = append(list, l1, l2)
+	//merge k list 使用优先级队列 合并k个升序队列
+	res := linklist.MergeKList(list)
 	//
-	//linklist.PrintLinkNode(res)
+	linklist.PrintLinkNode(res)
+
+	//fmt.Printf("ugly number %d is %d \r\n", 14, linklist.UglyNumberOfN(14))
+	fmt.Printf("res is %+v \r\n", linklist.IsUglyNumber(6))
 	//treenode.PrintPq()
 	//ntreeroot := dfs.CreateNTree()
 	//dfs.TraverseNTree(ntreeroot)
