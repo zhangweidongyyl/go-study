@@ -13,3 +13,8 @@ func CheckHasCycle(head *LinkNode) bool {
 	}
 	return false
 }
+
+func DetectCycle(head *LinkNode) *LinkNode {
+
+	return nil
+}
