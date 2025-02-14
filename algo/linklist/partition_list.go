@@ -5,6 +5,7 @@ func PartitionList(head *LinkNode, val int) *LinkNode {
 
 	dummy1 := &LinkNode{Val: -1}
 	dummy2 := &LinkNode{Val: -1}
+
 	p1, p2 := dummy1, dummy2
 
 	p := head
@@ -17,8 +18,11 @@ func PartitionList(head *LinkNode, val int) *LinkNode {
 			p2.Next = p
 			p2 = p2.Next
 		}
-		p = p.Next
+		//p = p.Next
+		temp := p.Next
+		p.Next = nil
+		p = temp
 	}
-	p1.Next = p2
+	p1.Next = dummy2.Next
 	return dummy1.Next
 }

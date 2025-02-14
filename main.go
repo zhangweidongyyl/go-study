@@ -35,16 +35,29 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 func main() {
 	// linklist相关
 	//1、merge two link list
+	//
+	//l1 := linklist.CreateLinkNode([]int{1, 3, 5})
+	//l2 := linklist.CreateLinkNode([]int{2, 6, 9, 14, 10})
+	//l3 := linklist.MergeTwoList(l1, l2)
+	////linklist.PrintLinkNode(l3)
+	//
+	//// 2 、 partition link list
+	//l4 := linklist.PartitionList(l3, 5)
+	//linklist.PrintLinkNode(l4)
 
-	l1 := linklist.CreateLinkNode([]int{1, 3, 5})
-	l2 := linklist.CreateLinkNode([]int{2, 6, 9, 10, 14})
-	l3 := linklist.MergeTwoList(l1, l2)
-	//linklist.PrintLinkNode(l3)
+	//l1 := linklist.CreateLinkNode([]int{1, 3, 5})
+	l2 := linklist.CreateLinkNode([]int{2, 6, 9, 14, 8})
 
-	// 2 、 partition link list
-	l4 := linklist.PartitionList(l3, 5)
-	linklist.PrintLinkNode(l4)
-
+	res := linklist.MiddleNode(l2)
+	linklist.PrintLinkNode(res)
+	//res := linklist.RemoveFromEnd(l2, 2)
+	//linklist.PrintLinkNode(res)
+	//list := make([]*linklist.LinkNode, 0)
+	//list = append(list, l1, l2)
+	// merge k list 使用优先级队列 合并k个升序队列
+	//res := linklist.MergeKList(list)
+	//
+	//linklist.PrintLinkNode(res)
 	//treenode.PrintPq()
 	//ntreeroot := dfs.CreateNTree()
 	//dfs.TraverseNTree(ntreeroot)
