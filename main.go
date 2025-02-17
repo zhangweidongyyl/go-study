@@ -34,6 +34,32 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	//  1  2  3
+	//  8  9  4
+	//  7  6  5
+	generateMatrixRes := linklist.GenerateMatrix(3)
+	fmt.Printf("generateMatrixRes is %+v \r\n", generateMatrixRes)
+	os.Exit(1)
+	//   1 2 4 5
+	//   2 3 5 7
+	//   9 8 7 6
+	//   7 5 4 3
+	// 翻转后
+	//   1 2 9 7
+	//   2 3 8 5
+
+	row1 := []int{1, 2, 4, 5}
+	row2 := []int{2, 3, 5, 7}
+	row3 := []int{9, 8, 7, 6}
+	row4 := []int{7, 5, 4, 3}
+	matrix := [][]int{
+		row1, row2, row3, row4,
+	}
+	rotateRes := linklist.RotateMatrix(matrix)
+	fmt.Printf("rotateRes is %+v \r\n", rotateRes)
+
+	os.Exit(1)
+
 	str1 := "12abccba2323d123321"
 	r := linklist.LongestPalidromeString(str1)
 	fmt.Printf("r is %s \r\n", r)
