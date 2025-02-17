@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"study.com/study/algo/linklist"
 	"sync"
 )
@@ -33,6 +34,15 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	str1 := "12abccba2323d123321"
+	r := linklist.LongestPalidromeString(str1)
+	fmt.Printf("r is %s \r\n", r)
+	os.Exit(1)
+	str := linklist.ReverseString([]rune("acdsd"))
+	fmt.Printf("str is %s \r\n", str)
+	os.Exit(0)
+	res := linklist.TwoSum([]int{2, 7, 11, 19}, 9)
+	fmt.Printf("res is %+v \r\n", res)
 	// linklist相关
 	//1、merge two link list
 	//
@@ -86,12 +96,35 @@ func main() {
 	//res := linklist.FindKThSumInMatrix(e1, e2, k)
 	//fmt.Printf("the %d min number in matrix is %d", k, res)
 
-	e1 := []int{1, 2, 7}
-	l1 := linklist.CreateLinkNode(e1)
-	e2 := []int{2, 4, 6}
-	l2 := linklist.CreateLinkNode(e2)
-	res := linklist.AddTwoNumbers2(l1, l2)
-	linklist.PrintLinkNode(res)
+	//e1 := []int{1, 2, 7, 6, 9, 10}
+	//l1 := linklist.CreateLinkNode(e1)
+	//
+	////res := linklist.ReverseN(l1, 3)
+	////res := linklist.ReverseBetween(l1, 2, 5)
+	//linklist.Traverse(l1)
+	//
+	//
+	//
+	//checkIsPalidromeString := linklist.CheckIsPalidromeString("abccbafdg")
+	//fmt.Printf("check is palidrome string is %+v \r\n", checkIsPalidromeString)
+
+	//l1 := linklist.CreateLinkNode([]int{1, 2, 3, 2, 1})
+	//checkIsPalidromeLink := linklist.CheckIsPalidromeLink1(l1)
+	//fmt.Printf("check is palidrome link is %+v \r\n", checkIsPalidromeLink)
+	//nums := []int{0, 0, 2, 2, 3, 4, 5, 6, 6, 7, 8, 8, 8, 9, 11}
+	//res := linklist.MoveZero(nums)
+	//fmt.Printf("MoveZero result is %+v \r\n", res)
+	//l1 := linklist.CreateLinkNode(nums)
+	//res1 := linklist.DeleteRepeatInPlaceForLink(l1)
+	//linklist.PrintLinkNode(res1)
+	//res := linklist.DeleteRepeatInPlaceForArray(nums)
+	//fmt.Printf("res is %+v \r\n", res)
+	//res := linklist.ReverseKGroup(l1, 2)
+	//linklist.PrintLinkNode(res)
+	//e2 := []int{2, 4, 6}
+	//l2 := linklist.CreateLinkNode(e2)
+	//res := linklist.AddTwoNumbers2(l1, l2)
+	//linklist.PrintLinkNode(res)
 
 	//treenode.PrintPq()
 	//ntreeroot := dfs.CreateNTree()
