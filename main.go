@@ -34,6 +34,37 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	piles := []int{3, 6, 7, 11}
+	pilesRes := linklist.MinEatSpeed(piles, 8)
+	fmt.Printf("pilesRes is %+v \r\n", pilesRes)
+	os.Exit(1)
+	binarySearchNums := []int{5, 6, 8, 8, 10}
+	binarySearchRes := linklist.RightBound(binarySearchNums, 8)
+	fmt.Printf("binarySearchRes is %+v \r\n", binarySearchRes)
+	os.Exit(1)
+	pNums := []int{10, 5, 2, 6}
+	k := 100
+	pNUmsRes := linklist.FindProductLessThanK(pNums, k)
+	fmt.Printf("pNumsRes is %+v \r\n", pNUmsRes)
+
+	os.Exit(1)
+
+	nums := []int{1, 2, 2, 2, 3}
+	minOperationsRes := linklist.FindMinOperations(nums, 6)
+	fmt.Printf("min operations is %+v \r\n", minOperationsRes)
+	os.Exit(1)
+	findLongestSubString := linklist.FindLongestSubString("abcbacabcdef")
+	fmt.Printf("findLongestSubString is %+v \r\n", findLongestSubString)
+	os.Exit(1)
+	findStringPosRes := linklist.FindStringPosition("sbbssb", "bs")
+	fmt.Printf("findStringPosRes is %+v \r\n", findStringPosRes)
+	os.Exit(1)
+	checkContainsString := linklist.CheckContainsString("koisb", "bs")
+	fmt.Printf("checkContainsString is %+v \r\n", checkContainsString)
+	os.Exit(1)
+	minStringRes := linklist.MinString("45abcccsd", "bs")
+	fmt.Printf("minStringRes is %+v \r\n", minStringRes)
+	os.Exit(1)
 	//  1  2  3
 	//  8  9  4
 	//  7  6  5
