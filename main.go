@@ -34,6 +34,31 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	// 1-2 航班订了10个座位
+	booking1 := []int{1, 2, 10}
+
+	booking2 := []int{2, 3, 20}
+	booking3 := []int{3, 3, 10}
+	//   预订记录    航班  座位数
+	// booking1    1，2   10
+	// booking2    2，3   20
+	// booking3    3，3   10
+	// 1 10
+	// 2 30
+	// 3 30
+	bookings := make([][]int, 0)
+	bookings = append(bookings, booking1, booking2, booking3)
+	calcRes := linklist.CalcFlightBookings(bookings, 3)
+	fmt.Printf("calcRes is %+v \r\n", calcRes)
+	os.Exit(1)
+	// 1 2 3 4 5 6
+	// 1 4 5 6 5 6
+	// 1 3 1 -1 1
+	numArray := linklist.NewNumArray([]int{1, 2, 3, 4, 5, 6})
+	numArray.Increment(1, 3, 2)
+	res1 := numArray.GetOriginNumsByDiffs()
+	fmt.Printf("numArray is %+v and sunRangeRes is %d \r\n", numArray, res1)
+	os.Exit(1)
 	piles := []int{3, 6, 7, 11}
 	pilesRes := linklist.MinEatSpeed(piles, 8)
 	fmt.Printf("pilesRes is %+v \r\n", pilesRes)
