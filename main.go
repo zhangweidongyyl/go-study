@@ -34,6 +34,14 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	//trips = [[2,1,5],[3,3,7]], capacity = 4
+	trips := make([][]int, 0)
+	trip1 := []int{2, 1, 5}
+	trip2 := []int{3, 3, 7}
+	trips = append(trips, trip1, trip2)
+	carPoolingRes := linklist.CarPooling(trips, 6)
+	fmt.Printf("carPoolingRes is %+v \r\n", carPoolingRes)
+	os.Exit(1)
 	// 1-2 航班订了10个座位
 	booking1 := []int{1, 2, 10}
 
