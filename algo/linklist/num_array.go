@@ -1,5 +1,35 @@
 package linklist
 
+// CarPooling 车上最初有 capacity 个空座位。车 只能 向一个方向行驶（也就是说，不允许掉头或改变方向）
+//
+// 给定整数 capacity 和一个数组 trips ,  trip[i] = [numPassengersi, fromi, toi] 表示第 i 次旅行有 numPassengersi 乘客，接他们和放他们的位置分别是 fromi 和 toi 。这些位置是从汽车的初始位置向东的公里数。
+//
+// 当且仅当你可以在所有给定的行程中接送所有乘客时，返回 true，否则请返回 false。
+func CarPooling(trips [][]int, capacity int) bool {
+	nums := make([]int, 1000)
+	for i := 0; i < 1000; i++ {
+		nums[i] = 0
+	}
+	diff := NewDifference(nums)
+	for _, trip := range trips {
+		// 旅客数量
+		userCount := trip[0]
+		// 从from开始
+		from := trip[1]
+		// end结束
+		end := trip[2] - 1
+		// 从 from 到end 加 userCount个旅客
+		diff.increment(from, end, userCount)
+	}
+	res := diff.getOriginResult()
+	for _, re := range res {
+		if capacity < re {
+			return false
+		}
+	}
+	return true
+}
+
 // CalcFlightBookings 计算飞机预定数
 // 题目是这样的
 // 这里有 n 个航班，它们分别从 1 到 n 进行编号。

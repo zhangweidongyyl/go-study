@@ -5,6 +5,8 @@ import (
 	"os"
 	"study.com/study/algo/linklist"
 	myqueue2 "study.com/study/algo/myqueue"
+	"study.com/study/algo/stack"
+
 	"sync"
 )
 
@@ -47,6 +49,34 @@ func main() {
 		fmt.Printf("ele is %d \r\n", ele)
 	}
 	fmt.Printf("peek is %d \r\n", head[0])
+	os.Exit(1)
+	mystack := stack.NewMyStack()
+	mystack.Push(1)
+	mystack.Push(2)
+	fmt.Println(mystack.Peek())
+	os.Exit(1)
+	rpnRes := stack.InfixToRpn("3 + 5 * 4 + 8 / 2")
+	evalRes := stack.EvalRpn(rpnRes)
+	fmt.Printf("rpnRes is %+v \r\n", rpnRes)
+	fmt.Printf("evalRes is %+v \r\n", evalRes)
+	os.Exit(1)
+	// 交换后 1 5 2 4 3
+	l1 := linklist.CreateLinkNode([]int{1, 2, 3, 4, 5})
+	l1res := stack.ReOrderLinkNode(l1)
+
+	linklist.PrintLinkNode(l1res)
+	os.Exit(1)
+	unixPath := "/./../.././//users/code/in/out/"
+	simplifyPath := stack.SimplifyPath(unixPath)
+	fmt.Printf("simplifyPath is %s \r\n", simplifyPath)
+	os.Exit(1)
+	//trips = [[2,1,5],[3,3,7]], capacity = 4
+	trips := make([][]int, 0)
+	trip1 := []int{2, 1, 5}
+	trip2 := []int{3, 3, 7}
+	trips = append(trips, trip1, trip2)
+	carPoolingRes := linklist.CarPooling(trips, 6)
+	fmt.Printf("carPoolingRes is %+v \r\n", carPoolingRes)
 	os.Exit(1)
 	// 1-2 航班订了10个座位
 	booking1 := []int{1, 2, 10}
