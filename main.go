@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"study.com/study/algo/linklist"
+	myqueue2 "study.com/study/algo/myqueue"
 	"sync"
 )
 
@@ -34,6 +35,19 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	myqueue := myqueue2.MyQueue{}
+	myqueue.Push(1)
+	myqueue.Push(2)
+	fmt.Println(myqueue.Peek())
+	os.Exit(1)
+	head := make([]int, 0)
+	head = append(head, 1)
+	head = append(head, 2)
+	for _, ele := range head {
+		fmt.Printf("ele is %d \r\n", ele)
+	}
+	fmt.Printf("peek is %d \r\n", head[0])
+	os.Exit(1)
 	// 1-2 航班订了10个座位
 	booking1 := []int{1, 2, 10}
 

@@ -1,5 +1,37 @@
 package linklist
 
+//	func ShipWithDays(weights []int,target int) int {
+//		left :=0
+//		right:=0
+//		for _, weight := range weights {
+//			left = min(left,weight)
+//			right += weight
+//		}
+//	}
+//
+// 函数定义 根据船的运载能力 计算这堆货物 需要在多少天运完
+// 注意这里的限制条件 装载重量不会大于船的运载重量，因此 决定了 weights里的值不会大于shipCap 否则 会有死循环
+func getDaysByShipCap(weights []int, shipCap int) int {
+	days := 0
+	for i := 0; i < len(weights); {
+		cap := shipCap
+		// 如果船的运载量能 运多堆货物 则 i 需要跳多次 而 days 只需要加 1
+		// 如果 运载量大于某堆
+		for i < len(weights) {
+
+			if cap < weights[i] {
+				break
+			} else {
+				cap = cap - weights[i]
+			}
+			i++
+		}
+		days++
+	}
+
+	return days
+}
+
 // MinEatSpeed 珂珂吃香蕉，求最小速度
 func MinEatSpeed(piles []int, target int) int {
 	left := 0
