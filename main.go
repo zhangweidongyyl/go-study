@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"study.com/study/algo/linklist"
+	"study.com/study/algo/stack"
 	"sync"
 )
 
@@ -34,6 +35,26 @@ func (userinfo UserInfoStruct) setusername() (bool, error) {
 	}
 }
 func main() {
+	mystack := stack.NewMyStack()
+	mystack.Push(1)
+	mystack.Push(2)
+	fmt.Println(mystack.Peek())
+	os.Exit(1)
+	rpnRes := stack.InfixToRpn("3 + 5 * 4 + 8 / 2")
+	evalRes := stack.EvalRpn(rpnRes)
+	fmt.Printf("rpnRes is %+v \r\n", rpnRes)
+	fmt.Printf("evalRes is %+v \r\n", evalRes)
+	os.Exit(1)
+	// 交换后 1 5 2 4 3
+	l1 := linklist.CreateLinkNode([]int{1, 2, 3, 4, 5})
+	l1res := stack.ReOrderLinkNode(l1)
+
+	linklist.PrintLinkNode(l1res)
+	os.Exit(1)
+	unixPath := "/./../.././//users/code/in/out/"
+	simplifyPath := stack.SimplifyPath(unixPath)
+	fmt.Printf("simplifyPath is %s \r\n", simplifyPath)
+	os.Exit(1)
 	//trips = [[2,1,5],[3,3,7]], capacity = 4
 	trips := make([][]int, 0)
 	trip1 := []int{2, 1, 5}
