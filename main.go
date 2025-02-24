@@ -1,47 +1,44 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"os"
 	"study.com/study/algo/linklist"
 	myqueue2 "study.com/study/algo/myqueue"
 	"study.com/study/algo/stack"
-
-	"sync"
 )
 
-var wg sync.WaitGroup
-
-func goroutine1(i int) {
-	fmt.Printf("hello goroutine!:%d \n", i)
-	wg.Done()
-}
-
-type UserInfoStruct struct {
-	uid  uint32
-	name string
-}
-
-func (userinfo UserInfoStruct) getusername() (string, error) {
-	if userinfo.uid >= 100 {
-		return "bigusername", nil
-	} else {
-		return "smallusername", nil
-	}
-}
-func (userinfo UserInfoStruct) setusername() (bool, error) {
-	if userinfo.uid >= 100 {
-		return true, nil
-	} else {
-		return false, nil
-	}
-}
 func main() {
+	recentNumber := myqueue2.NewRecentNumber()
+	recentNumber.Ping(1)
+	recentNumber.Ping(4)
+	recentNumber.Ping(2000)
+	recentNumberRes := recentNumber.Ping(5000)
+	fmt.Printf("recentNumberRes is %+v \r\n", recentNumberRes)
+	os.Exit(1)
 	myqueue := myqueue2.MyQueue{}
 	myqueue.Push(1)
 	myqueue.Push(2)
-	fmt.Println(myqueue.Peek())
+	myqueue.Push(3)
+	fmt.Println(myqueue.Pop())
 	os.Exit(1)
+	myStack := stack.NewMyStack()
+	myStack.Push(1)
+	myStack.Push(2)
+	fmt.Println(myStack.Pop())
+	myStack1 := stack.NewMyStack1()
+	myStack1.Push(1)
+	myStack1.Push(2)
+	fmt.Println(myStack1.Pop())
+
+	os.Exit(1)
+	stk := list.New()
+	stk.PushFront(1)
+	stk.PushFront(2)
+	fmt.Println(stk.Front().Value)
+	os.Exit(1)
+
 	head := make([]int, 0)
 	head = append(head, 1)
 	head = append(head, 2)

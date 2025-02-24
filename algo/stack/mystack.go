@@ -6,6 +6,41 @@ import (
 	"study.com/study/algo/linklist"
 )
 
+type MyStack1 struct {
+	elements   []int
+	topElement int
+}
+
+func NewMyStack1() *MyStack1 {
+	return &MyStack1{
+		elements:   make([]int, 0),
+		topElement: 0,
+	}
+}
+
+func (this *MyStack1) Push(element int) {
+	this.elements = append(this.elements, element)
+	this.topElement = element
+}
+func (this *MyStack1) Peek() int {
+	return this.topElement
+}
+func (this *MyStack1) Pop() int {
+	size := len(this.elements)
+	// 留下队尾 2 个元素
+	for size > 1 {
+		this.topElement = this.elements[0]
+		this.elements = append(this.elements, this.elements[0])
+		this.elements = this.elements[1:]
+		size--
+	}
+	// 记录新的队尾元素
+	popElem := this.elements[0]
+	this.elements = this.elements[1:]
+	// 删除之前的队尾元素
+	return popElem
+}
+
 type MyStack struct {
 	elements []int
 }
