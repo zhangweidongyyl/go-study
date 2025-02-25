@@ -6,6 +6,43 @@ import (
 	"study.com/study/algo/linklist"
 )
 
+func NextGreaterElement(nums1, nums2 []int) []int {
+	res2 := CalculateGreaterElement(nums2)
+	greaterRes2Map := make(map[int]int, len(res2))
+	for index, res := range nums2 {
+		greaterRes2Map[res] = res2[index]
+	}
+	// nums1 是 nums2 的子集，所以根据 greaterMap 可以得到结果
+	res := make([]int, len(nums1))
+	for i := 0; i < len(nums1); i++ {
+		res[i] = greaterRes2Map[nums1[i]]
+	}
+	return res
+}
+func CalculateGreaterElement(nums []int) []int {
+	n := len(nums)
+	// 存放答案的数组
+	res := make([]int, n)
+	// 存放下一个更大的元素
+	s := make([]int, 0)
+	// 倒着往栈里放
+	for i := n - 1; i >= 0; i-- {
+		// 判定个子高矮
+		for len(s) != 0 && s[len(s)-1] <= nums[i] {
+			// 矮个起开，反正也被挡着了。。。
+			s = s[:len(s)-1]
+		}
+		// nums[i] 身后的更大元素
+		if len(s) == 0 {
+			res[i] = -1
+		} else {
+			res[i] = s[len(s)-1]
+		}
+		s = append(s, nums[i])
+	}
+	return res
+}
+
 type MyStack1 struct {
 	elements   []int
 	topElement int
