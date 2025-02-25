@@ -135,3 +135,22 @@ func FindAllPath(root *TreeNode) [][]int {
 	traverse2(root)
 	return res
 }
+func CountTree(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	leftChildCount := CountTree(root.Left)
+	rightChildCount := CountTree(root.Right)
+	return leftChildCount + rightChildCount + 1
+}
+
+func FlipTree(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	tmp := root.Right
+	root.Right = root.Left
+	root.Left = tmp
+	FlipTree(root.Left)
+	FlipTree(root.Right)
+}

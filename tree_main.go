@@ -2,23 +2,25 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"study.com/study/algo/myqueue"
-	"study.com/study/algo/stack"
+	"study.com/study/algo/treenode/dfs"
 )
 
-func main1() {
-	nums := []int{2, 1, 2, 4, 3}
-	res := stack.CalculateGreaterElement(nums)
-	fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
-	os.Exit(1)
-	arrayQueue := myqueue.NewDefaultArrayQueue()
-	arrayQueue.Enqueue(1)
-	arrayQueue.Enqueue(2)
-	arrayQueue.Enqueue(3)
-	arrayQueue.Enqueue(4)
-	arrayQueue.Dequeue()
-	arrayQueue.Enqueue(5)
+func main() {
+	root := dfs.CreateTree()
+	dfs.FlipTree(root)
+	root.Traverse()
+	fmt.Printf("")
+	//nums := []int{2, 1, 2, 4, 3}
+	//res := stack.CalculateGreaterElement(nums)
+	//fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
+	//os.Exit(1)
+	//arrayQueue := myqueue.NewDefaultArrayQueue()
+	//arrayQueue.Enqueue(1)
+	//arrayQueue.Enqueue(2)
+	//arrayQueue.Enqueue(3)
+	//arrayQueue.Enqueue(4)
+	//arrayQueue.Dequeue()
+	//arrayQueue.Enqueue(5)
 	//recentNumber := myqueue2.NewRecentNumber()
 	//recentNumber.Ping(1)
 	//recentNumber.Ping(4)
