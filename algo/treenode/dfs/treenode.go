@@ -154,3 +154,59 @@ func FlipTree(root *TreeNode) {
 	FlipTree(root.Left)
 	FlipTree(root.Right)
 }
+
+type ThreeNodeWithNext struct {
+	Val         int
+	Left, Right *ThreeNodeWithNext
+	Next        *ThreeNodeWithNext
+}
+
+func CreateThreeNodeWithNext() *ThreeNodeWithNext {
+	root := &ThreeNodeWithNext{Val: 1}
+	root.Left = &ThreeNodeWithNext{Val: 2}
+	root.Right = &ThreeNodeWithNext{Val: 4}
+
+	root.Left.Left = &ThreeNodeWithNext{Val: 3}
+	root.Left.Right = &ThreeNodeWithNext{Val: 5}
+
+	root.Right.Left = &ThreeNodeWithNext{Val: 6}
+	root.Right.Right = &ThreeNodeWithNext{Val: 7}
+
+	return root
+}
+func ConnectThreeNodeWithNext(root *ThreeNodeWithNext) *ThreeNodeWithNext {
+	if root == nil {
+		return nil
+	}
+	traverseThreeNodeWithNext(root.Left, root.Right)
+	return root
+}
+func traverseThreeNodeWithNext(left, right *ThreeNodeWithNext) {
+	if left == nil || right == nil {
+		return
+	}
+	left.Next = right
+	traverseThreeNodeWithNext(left.Left, left.Right)
+	traverseThreeNodeWithNext(left.Right, right.Left)
+	traverseThreeNodeWithNext(right.Left, right.Right)
+}
+
+func BuildMaxBinaryTree(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	maxVal := 0
+	maxValIndex := 0
+	for i, num := range nums {
+		if maxVal < num {
+			maxVal = num
+			maxValIndex = i
+		}
+	}
+	root := &TreeNode{
+		Val: maxVal,
+	}
+	root.Left = BuildMaxBinaryTree(nums[:maxValIndex])
+	root.Right = BuildMaxBinaryTree(nums[maxValIndex+1:])
+	return root
+}

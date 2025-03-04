@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"study.com/study/algo/treenode/dfs"
 )
 
 func main() {
-	root := dfs.CreateTree()
-	dfs.FlipTree(root)
+	root := dfs.BuildMaxBinaryTree([]int{3, 2, 1, 6, 0, 5})
 	root.Traverse()
+	os.Exit(1)
+	threeTreeNode := dfs.CreateThreeNodeWithNext()
+	dfs.ConnectThreeNodeWithNext(threeTreeNode)
 	fmt.Printf("")
+	//root := dfs.CreateTree()
+	//dfs.FlipTree(root)
+	//root.Traverse()
+	//fmt.Printf("")
 	//nums := []int{2, 1, 2, 4, 3}
 	//res := stack.CalculateGreaterElement(nums)
 	//fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
