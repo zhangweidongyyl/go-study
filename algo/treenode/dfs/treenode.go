@@ -210,3 +210,31 @@ func BuildMaxBinaryTree(nums []int) *TreeNode {
 	root.Right = BuildMaxBinaryTree(nums[maxValIndex+1:])
 	return root
 }
+
+// BuildTreeByPreOrder 使用前序遍历和中序遍历 构建二叉树
+func BuildTreeByPreOrder(preOrder, middleOrder []int) *TreeNode {
+	return build(preOrder, 0, len(preOrder)-1, middleOrder, 0, len(middleOrder)-1)
+}
+func build(preOrder []int, preStart, preEnd int, middleOrder []int, middleStart, middleEnd int) *TreeNode {
+
+	if preStart > preEnd {
+		return nil
+	}
+	// 前序遍历的 第一个元素 为 root
+	rootVal := preOrder[preStart]
+
+	// 找到 根节点 在中序遍历的索引
+	rootValIndex := 0
+	for i := middleStart; i <= middleEnd; i++ {
+		if middleOrder[i] == rootVal {
+			rootValIndex = i
+			break
+		}
+	}
+	root := &TreeNode{Val: rootVal}
+	// 左子树的长度
+	leftLength := rootValIndex - middleStart
+	root.Left = build(preOrder, preStart+1, preStart+leftLength, middleOrder, middleStart, rootValIndex-1)
+	root.Right = build(preOrder, preStart+leftLength+1, preEnd, middleOrder, rootValIndex+1, middleEnd)
+	return root
+}

@@ -1,18 +1,16 @@
 package main
 
-import (
-	"fmt"
-	"os"
-	"study.com/study/algo/treenode/dfs"
-)
+import "study.com/study/algo/treenode/dfs"
 
 func main() {
-	root := dfs.BuildMaxBinaryTree([]int{3, 2, 1, 6, 0, 5})
+	root := dfs.BuildTreeByPreOrder([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})
 	root.Traverse()
-	os.Exit(1)
-	threeTreeNode := dfs.CreateThreeNodeWithNext()
-	dfs.ConnectThreeNodeWithNext(threeTreeNode)
-	fmt.Printf("")
+	//root := dfs.BuildMaxBinaryTree([]int{3, 2, 1, 6, 0, 5})
+	//root.Traverse()
+	//os.Exit(1)
+	//threeTreeNode := dfs.CreateThreeNodeWithNext()
+	//dfs.ConnectThreeNodeWithNext(threeTreeNode)
+	//fmt.Printf("")
 	//root := dfs.CreateTree()
 	//dfs.FlipTree(root)
 	//root.Traverse()
