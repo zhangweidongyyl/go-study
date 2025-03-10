@@ -1,24 +1,25 @@
 package main
 
-import (
-	"fmt"
-	"os"
-	"study.com/study/algo/myqueue"
-	"study.com/study/algo/stack"
-)
+import "study.com/study/algo/cycle_array"
 
-func main1() {
-	nums := []int{2, 1, 2, 4, 3}
-	res := stack.CalculateGreaterElement(nums)
-	fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
-	os.Exit(1)
-	arrayQueue := myqueue.NewDefaultArrayQueue()
-	arrayQueue.Enqueue(1)
-	arrayQueue.Enqueue(2)
-	arrayQueue.Enqueue(3)
-	arrayQueue.Enqueue(4)
-	arrayQueue.Dequeue()
-	arrayQueue.Enqueue(5)
+func main() {
+	ca := cycle_array.NewCycleArray(10)
+	ca.AddFirst(2)
+	ca.AddFirst(22)
+	ca.AddLast(887)
+	ca.RemoveLast()
+	ca.Print()
+	//nums := []int{2, 1, 2, 4, 3}
+	//res := stack.CalculateGreaterElement(nums)
+	//fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
+	//os.Exit(1)
+	//arrayQueue := myqueue.NewDefaultArrayQueue()
+	//arrayQueue.Enqueue(1)
+	//arrayQueue.Enqueue(2)
+	//arrayQueue.Enqueue(3)
+	//arrayQueue.Enqueue(4)
+	//arrayQueue.Dequeue()
+	//arrayQueue.Enqueue(5)
 	//recentNumber := myqueue2.NewRecentNumber()
 	//recentNumber.Ping(1)
 	//recentNumber.Ping(4)

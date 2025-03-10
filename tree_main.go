@@ -2,7 +2,7 @@ package main
 
 import "study.com/study/algo/treenode/dfs"
 
-func main() {
+func main2() {
 	root := dfs.BuildTreeByPreOrder([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})
 	root.Traverse()
 	//root := dfs.BuildMaxBinaryTree([]int{3, 2, 1, 6, 0, 5})
