@@ -1,14 +1,19 @@
 package main
 
-import "study.com/study/algo/cycle_array"
+import (
+	"os"
+	"study.com/study/grammar"
+)
 
 func main() {
-	ca := cycle_array.NewCycleArray(10)
-	ca.AddFirst(2)
-	ca.AddFirst(22)
-	ca.AddLast(887)
-	ca.RemoveLast()
-	ca.Print()
+	grammar.GenerateTrace()
+	os.Exit(1)
+	//ca := cycle_array.NewCycleArray(10)
+	//ca.AddFirst(2)
+	//ca.AddFirst(22)
+	//ca.AddLast(887)
+	//ca.RemoveLast()
+	//ca.Print()
 	//nums := []int{2, 1, 2, 4, 3}
 	//res := stack.CalculateGreaterElement(nums)
 	//fmt.Printf("CalculateGreaterElement res is %+v \r\n", res)
