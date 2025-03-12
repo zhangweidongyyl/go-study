@@ -1,7 +1,32 @@
-package main
+package gochan
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+	"runtime"
+)
 
+func busi(ch chan bool, i int) {
+
+	fmt.Println("go func ", i, " goroutine count = ", runtime.NumGoroutine())
+	<-ch
+}
+
+func TestChannel() {
+	//模拟用户需求业务的数量
+	task_cnt := math.MaxInt64
+	//task_cnt := 10
+
+	ch := make(chan bool, 3)
+
+	for i := 0; i < task_cnt; i++ {
+
+		ch <- true
+
+		go busi(ch, i)
+	}
+
+}
 func main() {
 
 	//nocachechan()
@@ -34,7 +59,8 @@ func recv(c chan int) {
 	fmt.Printf("从通道接收到的数据为：%d \n", val)
 }
 
-/**
+/*
+*
 1、实现将 1 ~100数值发送到ch1
 2、从ch1中取出数据乘以2 发送到ch2
 3、打印ch2中数据

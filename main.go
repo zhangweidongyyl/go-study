@@ -1,13 +1,14 @@
 package main
 
-import (
-	"os"
-	"study.com/study/grammar"
-)
+import gochan "study.com/study/chan"
 
 func main() {
-	grammar.GenerateTrace()
-	os.Exit(1)
+	gochan.TestChannel()
+	//data := make(map[string]interface{})
+	//data["key"] = 200
+	//os.Exit(1)
+	//grammar.GenerateTrace()
+	//os.Exit(1)
 	//ca := cycle_array.NewCycleArray(10)
 	//ca.AddFirst(2)
 	//ca.AddFirst(22)
