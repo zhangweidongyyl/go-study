@@ -1,5 +1,63 @@
 package linklist
 
+// 解压函数
+func Decompress(compressed []int) []int {
+	if len(compressed) == 0 {
+		return []int{}
+	}
+
+	// 解压游程编码
+	diff := []int{}
+	for i := 0; i < len(compressed); i += 2 {
+		value := compressed[i]
+		count := compressed[i+1]
+		for j := 0; j < count; j++ {
+			diff = append(diff, value)
+		}
+	}
+
+	// 解压差分编码
+	data := make([]int, len(diff))
+	data[0] = diff[0]
+	for i := 1; i < len(diff); i++ {
+		data[i] = data[i-1] + diff[i]
+	}
+
+	return data
+}
+
+// 压缩函数
+func Compress(data []int) []int {
+	if len(data) == 0 {
+		return []int{}
+	}
+
+	// 差分编码
+	diff := make([]int, len(data))
+	diff[0] = data[0]
+	for i := 1; i < len(data); i++ {
+		diff[i] = data[i] - data[i-1]
+	}
+
+	// 游程编码
+	compressed := []int{}
+	currentValue := diff[0]
+	count := 1
+
+	for i := 1; i < len(diff); i++ {
+		if diff[i] == currentValue {
+			count++
+		} else {
+			compressed = append(compressed, currentValue, count)
+			currentValue = diff[i]
+			count = 1
+		}
+	}
+	compressed = append(compressed, currentValue, count)
+
+	return compressed
+}
+
 // CarPooling 车上最初有 capacity 个空座位。车 只能 向一个方向行驶（也就是说，不允许掉头或改变方向）
 //
 // 给定整数 capacity 和一个数组 trips ,  trip[i] = [numPassengersi, fromi, toi] 表示第 i 次旅行有 numPassengersi 乘客，接他们和放他们的位置分别是 fromi 和 toi 。这些位置是从汽车的初始位置向东的公里数。

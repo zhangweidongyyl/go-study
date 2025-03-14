@@ -1,9 +1,49 @@
 package main
 
-import gochan "study.com/study/chan"
+import (
+	"study.com/study/compress"
+)
 
 func main() {
-	gochan.TestChannel()
+	datas := []uint32{10, 11, 12, 12, 12, 15, 16, 16, 18, 15, 11, 11, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+
+	fileName := "test.md"
+	outputFileName := "test1.md"
+	compress.CreateFile(fileName, datas)
+	compress.StreamReadEncodeNoMemory(fileName, outputFileName)
+	compress.StreamReadDecodeNoMemory(outputFileName)
+	//encodedResult := compress.RuneLengthEncode(datas)
+	//b := compress.EncodeToBinary(encodedResult)
+	//bres := compress.DecodeBinaryToDomains(b)
+	//fmt.Printf("bres is %+v \r\n", bres)
+	//fmt.Printf("datas length is %d \r\n", unsafe.Sizeof(b))
+	//fmt.Printf("encodeResult is %+v and memory is %d \r\n", encodedResult, unsafe.Sizeof(encodedResult))
+	//res := compress.RuneLengthDecode(encodedResult)
+	//fmt.Printf("res is %+v \r\n", res)
+	//// 示例数据
+	//data := []int{10, 11, 12, 12, 12, 15, 16, 16, 18}
+	//
+	//// 压缩
+	//compressed := linklist.Compress(data)
+	//fmt.Println("压缩后的数据:", compressed)
+	//
+	//// 解压
+	//decompressed := linklist.Decompress(compressed)
+	//fmt.Println("解压后的数据:", decompressed)
+	//
+	//// 检查解压是否正确
+	//if fmt.Sprint(data) == fmt.Sprint(decompressed) {
+	//	fmt.Println("解压成功！")
+	//} else {
+	//	fmt.Println("解压失败！")
+	//}
+
+	//numArray := linklist.NewNumArray([]int{1, 2, 3, 4, 5, 6})
+	//numArray.Increment(1, 3, 2)
+	//res1 := numArray.GetOriginNumsByDiffs()
+	//fmt.Printf("numArray is %+v and sunRangeRes is %d \r\n", numArray, res1)
+	//os.Exit(1)
+	//gochan.TestChannel()
 	//data := make(map[string]interface{})
 	//data["key"] = 200
 	//os.Exit(1)
