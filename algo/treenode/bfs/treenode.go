@@ -47,6 +47,25 @@ func CreateBstTree() *TreeNode {
 	root.Right.Right = &TreeNode{Val: 10}
 	return root
 }
+func LevelOrderTraverse11(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	q := make([]*TreeNode, 0)
+	q = append(q, root)
+	for len(q) > 0 {
+		current := q[0]
+		q = q[1:]
+		fmt.Printf("val is %d \r\n", current.Val)
+		if current.Left != nil {
+			q = append(q, current.Left)
+		}
+		if current.Right != nil {
+			q = append(q, current.Right)
+		}
+	}
+
+}
 
 // LevelOrderTraverse1 无法知道当前节点所在的层次，无法计算二叉树的深度等，因此该种写法应用场景很少
 func LevelOrderTraverse1(root *TreeNode) {
