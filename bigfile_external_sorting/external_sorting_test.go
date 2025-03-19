@@ -10,9 +10,9 @@ import (
 func TestExternalSorting(t *testing.T) {
 
 	convey.Convey("external sorting", t, func() {
-		inputFile := "/Users/zyb/code/mycode/go-study/input.txt"
-		outputFile := "/Users/zyb/code/mycode/go-study/output.txt"
-		tempDir := "/Users/zyb/code/mycode/go-study/temp"
+		inputFile := "/Users/zhangweidong/code/go-study/input.txt"
+		outputFile := "/Users/zhangweidong/code/go-study/output.txt"
+		tempDir := "/Users/zhangweidong/code/go-study/temp"
 		lineSize := 2 // 每次读取的行数
 
 		// 确保临时目录存在

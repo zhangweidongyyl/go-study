@@ -64,15 +64,20 @@ func ExternalSorting(inputFile, outputFile, tempDir string, lineSize int) {
 	mergeFiles(outputFile, tempFiles)
 }
 
+type HeapItem struct {
+	val        int
+	chunkIndex int
+}
+
 // 定义一个最小堆用于多路归并
-type MinHeap []int
+type MinHeap []HeapItem
 
 func (h MinHeap) Len() int           { return len(h) }
-func (h MinHeap) Less(i, j int) bool { return h[i] < h[j] }
+func (h MinHeap) Less(i, j int) bool { return h[i].val < h[j].val }
 func (h MinHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 
 func (h *MinHeap) Push(x interface{}) {
-	*h = append(*h, x.(int))
+	*h = append(*h, x.(HeapItem))
 }
 
 func (h *MinHeap) Pop() interface{} {
@@ -133,15 +138,18 @@ func mergeFiles(outputFile string, tempFiles []string) {
 	for i, scanner := range scanners {
 		if scanner.Scan() {
 			value, _ := strconv.Atoi(scanner.Text())
-			heap.Push(h, value*len(tempFiles)+i) // 用 value * len(tempFiles) + i 来记录来源
+			heap.Push(h, HeapItem{
+				val:        value,
+				chunkIndex: i,
+			})
 		}
 	}
 
 	// 多路归并
 	for h.Len() > 0 {
-		minValue := heap.Pop(h).(int)
-		value := minValue / len(tempFiles)
-		chunkIndex := minValue % len(tempFiles)
+		minHeapItem := heap.Pop(h).(HeapItem)
+		value := minHeapItem.val
+		chunkIndex := minHeapItem.chunkIndex
 		_, err := writer.WriteString(fmt.Sprintf("%d\n", value))
 		if err != nil {
 			panic(err)
@@ -149,7 +157,10 @@ func mergeFiles(outputFile string, tempFiles []string) {
 
 		if scanners[chunkIndex].Scan() {
 			nextValue, _ := strconv.Atoi(scanners[chunkIndex].Text())
-			heap.Push(h, nextValue*len(tempFiles)+chunkIndex)
+			heap.Push(h, HeapItem{
+				val:        nextValue,
+				chunkIndex: chunkIndex,
+			})
 		}
 	}
 	writer.Flush()
