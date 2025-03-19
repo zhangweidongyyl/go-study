@@ -135,6 +135,7 @@ func mergeFiles(outputFile string, tempFiles []string) {
 	// 初始化最小堆
 	h := &MinHeap{}
 	heap.Init(h)
+	// 将每个小文件的第一行写入 小顶堆
 	for i, scanner := range scanners {
 		if scanner.Scan() {
 			value, _ := strconv.Atoi(scanner.Text())
