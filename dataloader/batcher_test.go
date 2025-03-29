@@ -1,6 +1,7 @@
 package dataloader
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,45 @@ type MockUserDB struct {
 
 func (m *MockUserDB) GetUsersByIDs(ids []int) ([]User, error) {
 	return m.GetUsersByIDsFunc(ids)
+}
+
+// BatchUserLoader 批量用户加载器实现
+func BatchUserLoader(ctx *gin.Context, db *MockUserDB, ids []int) ([]User, error) {
+	// 1. 空请求快速返回
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	// 2. 调用批量查询方法
+	users, err := db.GetUsersByIDs(ids)
+	if err != nil {
+		return nil, fmt.Errorf("数据库查询失败: %w", err)
+	}
+
+	// 3. 验证结果数量（根据业务需求可选）
+	// 这里根据测试用例设计，预期返回所有请求的用户
+	if len(users) != len(ids) {
+		return nil, fmt.Errorf("部分用户数据未找到，请求%d条，返回%d条",
+			len(ids), len(users))
+	}
+
+	// 4. 排序保证结果顺序（根据测试需求可选）
+	// 测试用例通过索引直接访问，需要确保顺序一致
+	userMap := make(map[int]User)
+	for _, user := range users {
+		userMap[user.ID] = user
+	}
+
+	ordered := make([]User, 0, len(ids))
+	for _, id := range ids {
+		if user, exists := userMap[id]; exists {
+			ordered = append(ordered, user)
+		} else {
+			return nil, fmt.Errorf("用户%d数据缺失", id)
+		}
+	}
+
+	return ordered, nil
 }
 
 // 测试用例1：正常批量查询
