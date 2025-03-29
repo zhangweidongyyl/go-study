@@ -151,3 +151,14 @@ func (b *batcher[K, V]) batch() {
 		close(req.channel)
 	}
 }
+
+// 新增 Load 方法（batcher结构体的成员方法）
+func (b *batcher[K, V]) Load(key K) <-chan *Result[V] {
+	ch := make(chan *Result[V], 1) // 缓冲通道防止阻塞
+	req := &batchRequest[K, V]{
+		key:     key,
+		channel: ch,
+	}
+	b.collect(req)
+	return ch
+}

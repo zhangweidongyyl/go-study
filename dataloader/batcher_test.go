@@ -1,246 +1,237 @@
 package dataloader
 
 import (
-	"context"
-	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http/httptest"
 	"sync"
 	"testing"
 	"time"
 )
 
-// User 测试用用户结构体
-type User struct {
-	ID   int
-	Name string
+// 辅助工具：创建测试用的 Gin Context
+func createTestContext() *gin.Context {
+	gin.SetMode(gin.TestMode)
+	ctx, _ := gin.CreateTestContext(nil)
+	ctx.Request = httptest.NewRequest("GET", "/", nil)
+	return ctx
 }
 
-// MockUserDB 模拟数据库实现
-type MockUserDB struct {
-	// 通过闭包自定义查询行为
-	GetUsersByIDsFunc func(ids []int) ([]User, error)
+// 测试 BatchFunc 的模拟实现
+type mockBatchFunc[K comparable, V any] struct {
+	mu     sync.Mutex
+	called int
+	result map[K]V
+	err    error
+	panic  bool
 }
 
-func (m *MockUserDB) GetUsersByIDs(ids []int) ([]User, error) {
-	return m.GetUsersByIDsFunc(ids)
-}
+func (m *mockBatchFunc[K, V]) fn(_ *gin.Context, keys []K) (map[K]V, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.called++
 
-// BatchUserLoader 批量用户加载器实现
-func BatchUserLoader(ctx *gin.Context, db *MockUserDB, ids []int) ([]User, error) {
-	// 1. 空请求快速返回
-	if len(ids) == 0 {
-		return nil, nil
+	if m.panic {
+		panic("mock panic")
 	}
 
-	// 2. 调用批量查询方法
-	users, err := db.GetUsersByIDs(ids)
-	if err != nil {
-		return nil, fmt.Errorf("数据库查询失败: %w", err)
+	if m.err != nil {
+		return nil, m.err
 	}
 
-	// 3. 验证结果数量（根据业务需求可选）
-	// 这里根据测试用例设计，预期返回所有请求的用户
-	if len(users) != len(ids) {
-		return nil, fmt.Errorf("部分用户数据未找到，请求%d条，返回%d条",
-			len(ids), len(users))
-	}
-
-	// 4. 排序保证结果顺序（根据测试需求可选）
-	// 测试用例通过索引直接访问，需要确保顺序一致
-	userMap := make(map[int]User)
-	for _, user := range users {
-		userMap[user.ID] = user
-	}
-
-	ordered := make([]User, 0, len(ids))
-	for _, id := range ids {
-		if user, exists := userMap[id]; exists {
-			ordered = append(ordered, user)
-		} else {
-			return nil, fmt.Errorf("用户%d数据缺失", id)
+	result := make(map[K]V)
+	for _, k := range keys {
+		if v, ok := m.result[k]; ok {
+			result[k] = v
 		}
 	}
-
-	return ordered, nil
+	return result, nil
 }
 
-// 测试用例1：正常批量查询
-func TestBatchUserLoader_NormalCase(t *testing.T) {
-	// 初始化模拟数据库（返回所有请求用户）
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			users := make([]User, 0, len(ids))
-			for _, id := range ids {
-				users = append(users, User{
-					ID:   id,
-					Name: fmt.Sprintf("User%d", id),
-				})
-			}
-			return users, nil
-		},
+/******************** 测试用例实现 ********************/
+
+// 测试1: 超时触发批处理
+func TestBatchTimeout(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	mock := &mockBatchFunc[string, int]{
+		result: map[string]int{"test": 42},
 	}
 
-	// 执行批量加载
-	ctx := &gin.Context{}
-	ids := []int{1, 2, 3}
-	result, err := BatchUserLoader(ctx, mockDB, ids)
+	// 创建 batcher: 容量5，等待50ms
+	batcher := batch[string, int](ctx, "timeout_test", mock.fn, 5, 50*time.Millisecond, noopTracer[string, int]{})
 
-	// 验证结果
-	assert.NoError(t, err)
-	assert.Equal(t, 3, len(result))
-	assert.Equal(t, "User2", result[2].Name)
+	// 发送单个请求
+	resultChan := batcher.Load("test")
+
+	// 等待超过50ms
+	time.Sleep(100 * time.Millisecond)
+
+	select {
+	case res := <-resultChan:
+		assert.NoError(t, res.Error)
+		assert.Equal(t, 42, res.Data)
+		assert.Equal(t, 1, mock.called)
+	default:
+		t.Fatal("预期收到结果但通道未关闭")
+	}
 }
 
-// 测试用例2：数据库返回错误
-func TestBatchUserLoader_DBError(t *testing.T) {
-	// 模拟数据库返回错误
-	expectedErr := errors.New("connection timeout")
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			return nil, expectedErr
-		},
+// 测试2: 容量触发批处理
+func TestBatchCapacityTrigger(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	mock := &mockBatchFunc[int, string]{
+		result: map[int]string{1: "a", 2: "b", 3: "c"},
 	}
 
-	// 执行批量加载
-	ctx := &gin.Context{}
-	ids := []int{1, 2, 3}
-	result, err := BatchUserLoader(ctx, mockDB, ids)
+	// 容量3，等待1小时（测试不应等待）
+	batcher := batch[int, string](ctx, "capacity_test", mock.fn, 3, time.Hour, noopTracer[int, string]{})
 
-	// 验证错误传递
-	assert.ErrorContains(t, err, "connection timeout")
-	assert.Nil(t, result)
-}
+	var wg sync.WaitGroup
+	results := make([]*Result[string], 3)
 
-// 测试用例3：部分ID不存在
-func TestBatchUserLoader_PartialResults(t *testing.T) {
-	// 模拟只返回偶数ID用户
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			users := make([]User, 0)
-			for _, id := range ids {
-				if id%2 == 0 {
-					users = append(users, User{ID: id})
-				}
-			}
-			return users, nil
-		},
-	}
-
-	// 执行批量加载
-	ctx := &gin.Context{}
-	ids := []int{1, 2, 3, 4, 5}
-	result, err := BatchUserLoader(ctx, mockDB, ids)
-
-	// 验证部分结果
-	assert.NoError(t, err)
-	assert.Equal(t, 2, len(result))  // 应返回2个用户（ID 2和4）
-	assert.NotContains(t, result, 1) // 确认不包含ID 1
-}
-
-// 测试用例4：处理空请求
-func TestBatchUserLoader_EmptyIDs(t *testing.T) {
-	called := false
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			called = true
-			return []User{}, nil
-		},
-	}
-
-	// 执行空ID列表查询
-	ctx := &gin.Context{}
-	result, err := BatchUserLoader(ctx, mockDB, []int{})
-
-	// 验证行为
-	assert.NoError(t, err)
-	assert.False(t, called) // 预期不调用数据库
-	assert.Empty(t, result)
-}
-
-// 测试用例5：自动去重处理
-func TestBatchUserLoader_Deduplication(t *testing.T) {
-	callCount := 0
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			callCount++
-			// 验证接收到的ID已去重
-			assert.ElementsMatch(t, []int{1, 2}, ids)
-			return []User{{ID: 1}, {ID: 2}}, nil
-		},
-	}
-
-	// 执行包含重复ID的查询
-	ctx := &gin.Context{}
-	ids := []int{1, 2, 2, 1, 1}
-	result, err := BatchUserLoader(ctx, mockDB, ids)
-
-	// 验证结果
-	assert.NoError(t, err)
-	assert.Equal(t, 1, callCount) // 确保只调用一次
-	assert.Equal(t, 2, len(result))
-}
-
-// 测试用例6：并发安全性验证
-func TestBatchUserLoader_ConcurrentAccess(t *testing.T) {
-	var (
-		mutex   sync.Mutex
-		callIDs []int
-		mockDB  = &MockUserDB{
-			GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-				mutex.Lock()
-				defer mutex.Unlock()
-				callIDs = append(callIDs, ids...)
-				return []User{{ID: 999}}, errors.New("mock error")
-			},
-		}
-		wg  sync.WaitGroup
-		n   = 100
-		ctx = &gin.Context{}
-	)
-
-	// 启动并发请求
-	wg.Add(n)
-	for i := 0; i < n; i++ {
-		go func(id int) {
+	// 发送3个请求
+	for i := 0; i < 3; i++ {
+		wg.Add(1)
+		go func(idx int) {
 			defer wg.Done()
-			_, _ = BatchUserLoader(ctx, mockDB, []int{id})
+			results[idx] = <-batcher.Load(idx + 1)
 		}(i)
+	}
+
+	wg.Wait()
+
+	assert.Equal(t, 1, mock.called)
+	for i := 0; i < 3; i++ {
+		assert.NoError(t, results[i].Error)
+	}
+}
+
+// 测试3: 错误处理
+func TestBatchErrorHandling(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	expectedErr := errors.New("mock error")
+	mock := &mockBatchFunc[string, bool]{err: expectedErr}
+
+	batcher := batch[string, bool](ctx, "error_test", mock.fn, 2, 50*time.Millisecond, noopTracer[string, bool]{})
+
+	errChan1 := batcher.Load("key1")
+	errChan2 := batcher.Load("key2")
+
+	res1 := <-errChan1
+	res2 := <-errChan2
+
+	assert.ErrorIs(t, res1.Error, expectedErr)
+	assert.ErrorIs(t, res2.Error, expectedErr)
+	assert.Equal(t, 1, mock.called)
+}
+
+// 测试4: Panic处理
+func TestBatchPanicHandling(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	// 重定向log输出到测试logger
+	defer func(orig *log.Logger) {
+		log.SetOutput(orig.Writer())
+	}(log.Default())
+	log.SetOutput(testLogger{t})
+
+	mock := &mockBatchFunc[int, interface{}]{panic: true}
+	batcher := batch[int, interface{}](ctx, "panic_test", mock.fn, 5, 10*time.Millisecond, noopTracer[int, interface{}]{})
+
+	result := <-batcher.Load(123)
+
+	assert.Contains(t, result.Error.Error(), "panic received")
+	assert.Equal(t, 1, mock.called)
+}
+
+// 测试5: 并发安全
+func TestConcurrentSafety(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	const numRequests = 100
+	mock := &mockBatchFunc[int, int]{
+		result: make(map[int]int),
+	}
+	for i := 0; i < numRequests; i++ {
+		mock.result[i] = i * 2
+	}
+
+	batcher := batch[int, int](ctx, "concurrency_test", mock.fn, 20, 50*time.Millisecond, noopTracer[int, int]{})
+
+	var wg sync.WaitGroup
+	results := make([]*Result[int], numRequests)
+
+	for i := 0; i < numRequests; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			results[idx] = <-batcher.Load(idx)
+		}(i)
+	}
+
+	wg.Wait()
+
+	// 验证所有结果
+	for i := 0; i < numRequests; i++ {
+		assert.NoError(t, results[i].Error)
+		assert.Equal(t, i*2, results[i].Data)
+	}
+
+	// 验证批处理次数：100/20 = 5次（需要根据实际触发逻辑调整）
+	assert.True(t, mock.called >= 5 && mock.called <= 6) // 包含可能的超时批次
+}
+
+// 测试6: 键去重
+func TestKeyDeduplication(t *testing.T) {
+	ctx := createTestContext()
+	ctx.Set(batchCtx, &batchFactory{batch: &sync.Map{}})
+
+	mock := &mockBatchFunc[string, int]{
+		result: map[string]int{"a": 1, "b": 2},
+	}
+
+	batcher := batch[string, int](ctx, "dedup_test", mock.fn, 5, 100*time.Millisecond, noopTracer[string, int]{})
+
+	// 发送重复请求
+	var wg sync.WaitGroup
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-batcher.Load("a")
+			<-batcher.Load("b")
+		}()
 	}
 	wg.Wait()
 
-	// 验证合并效果
-	mutex.Lock()
-	defer mutex.Unlock()
-	assert.GreaterOrEqual(t, len(callIDs), n) // 至少包含所有ID
+	// 应只调用一次，且传入的keys是去重后的 ["a", "b"]
+	mock.mu.Lock()
+	defer mock.mu.Unlock()
+	assert.Equal(t, 1, mock.called)
 }
 
-// 测试用例7：上下文超时处理
-func TestBatchUserLoader_ContextTimeout(t *testing.T) {
-	// 创建带超时的上下文
-	ctx, cancel := gin.CreateTestContext(nil)
-	ctx.Request = httptest.NewRequest("GET", "/", nil)
-	ctx.Set("timeout", true)
+/******************** 辅助工具 ********************/
 
-	// 模拟慢查询
-	mockDB := &MockUserDB{
-		GetUsersByIDsFunc: func(ids []int) ([]User, error) {
-			time.Sleep(200 * time.Millisecond) // 超过上下文超时时间
-			return []User{{ID: 1}}, nil
-		},
-	}
+// 实现一个无操作的 Tracer
+type noopTracer[K Key, V Value] struct{}
 
-	// 设置上下文超时
-	timeoutCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
-	defer cancel()
-	ctx.Request = ctx.Request.WithContext(timeoutCtx)
+func (t noopTracer[K, V]) TraceBatch(_ *gin.Context, _ []K) func() {
+	return func() {}
+}
 
-	// 执行查询
-	ids := []int{1}
-	_, err := BatchUserLoader(ctx, mockDB, ids)
+// 测试专用的 logger
+type testLogger struct{ t *testing.T }
 
-	// 验证超时错误
-	assert.ErrorContains(t, err, "context deadline exceeded")
+func (l testLogger) Write(p []byte) (n int, err error) {
+	l.t.Logf("[LOG] %s", string(p))
+	return len(p), nil
 }
