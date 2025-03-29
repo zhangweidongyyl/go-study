@@ -1,7 +1,7 @@
 package commonfile
 
 import (
-	"git.zuoyebang.cc/pkg/golib/v2/zlog"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"os"
 	"path/filepath"
@@ -13,7 +13,7 @@ func DelTempFile(ctx *gin.Context, localFilePath string) bool {
 		return true
 	}
 	if err := os.Remove(localFilePath); err != nil {
-		zlog.Errorf(ctx, "delTempFile has err:%+v", err)
+		fmt.Printf("delTempFile has err:%+v", err)
 		return false
 	}
 	return true

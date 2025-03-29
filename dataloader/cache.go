@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"git.zuoyebang.cc/pkg/golib/v2/utils"
 	"github.com/gin-gonic/gin"
 	lru "github.com/hashicorp/golang-lru/v2/expirable"
 )
@@ -78,7 +77,7 @@ var memCaches = map[string]any{}
 var mcMu sync.Mutex
 
 func useCache(ctx *gin.Context) bool {
-	use := ctx.GetHeader(utils.ZYBTransportHeader + "data-loader-mem-cache")
+	use := ctx.GetHeader("data-loader-mem-cache")
 	if use == "on" {
 		return true
 	} else {
