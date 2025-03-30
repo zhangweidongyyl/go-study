@@ -1,6 +1,7 @@
 package dataloader
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -61,7 +62,7 @@ func TestBatchTimeout(t *testing.T) {
 	}
 
 	// 创建 batcher: 容量5，等待50ms
-	batcher := batch[string, int](ctx, "timeout_test", mock.fn, 5, 50*time.Millisecond, noopTracer[string, int]{})
+	batcher := batch[string, int](ctx, "timeout_test", mock.fn, 5, 50*time.Millisecond, NoopTracer[string, int]{})
 
 	// 发送单个请求
 	resultChan := batcher.Load("test")
@@ -89,7 +90,7 @@ func TestBatchCapacityTrigger(t *testing.T) {
 	}
 
 	// 容量3，等待1小时（测试不应等待）
-	batcher := batch[int, string](ctx, "capacity_test", mock.fn, 3, time.Hour, noopTracer[int, string]{})
+	batcher := batch[int, string](ctx, "capacity_test", mock.fn, 3, time.Hour, NoopTracer[int, string]{})
 
 	var wg sync.WaitGroup
 	results := make([]*Result[string], 3)
@@ -119,7 +120,7 @@ func TestBatchErrorHandling(t *testing.T) {
 	expectedErr := errors.New("mock error")
 	mock := &mockBatchFunc[string, bool]{err: expectedErr}
 
-	batcher := batch[string, bool](ctx, "error_test", mock.fn, 2, 50*time.Millisecond, noopTracer[string, bool]{})
+	batcher := batch[string, bool](ctx, "error_test", mock.fn, 2, 50*time.Millisecond, NoopTracer[string, bool]{})
 
 	errChan1 := batcher.Load("key1")
 	errChan2 := batcher.Load("key2")
@@ -144,7 +145,7 @@ func TestBatchPanicHandling(t *testing.T) {
 	log.SetOutput(testLogger{t})
 
 	mock := &mockBatchFunc[int, interface{}]{panic: true}
-	batcher := batch[int, interface{}](ctx, "panic_test", mock.fn, 5, 10*time.Millisecond, noopTracer[int, interface{}]{})
+	batcher := batch[int, interface{}](ctx, "panic_test", mock.fn, 5, 10*time.Millisecond, NoopTracer[int, interface{}]{})
 
 	result := <-batcher.Load(123)
 
@@ -165,7 +166,7 @@ func TestConcurrentSafety(t *testing.T) {
 		mock.result[i] = i * 2
 	}
 
-	batcher := batch[int, int](ctx, "concurrency_test", mock.fn, 20, 50*time.Millisecond, noopTracer[int, int]{})
+	batcher := batch[int, int](ctx, "concurrency_test", mock.fn, 20, 50*time.Millisecond, NoopTracer[int, int]{})
 
 	var wg sync.WaitGroup
 	results := make([]*Result[int], numRequests)
@@ -199,7 +200,7 @@ func TestKeyDeduplication(t *testing.T) {
 		result: map[string]int{"a": 1, "b": 2},
 	}
 
-	batcher := batch[string, int](ctx, "dedup_test", mock.fn, 5, 100*time.Millisecond, noopTracer[string, int]{})
+	batcher := batch[string, int](ctx, "dedup_test", mock.fn, 5, 100*time.Millisecond, NoopTracer[string, int]{})
 
 	// 发送重复请求
 	var wg sync.WaitGroup
@@ -220,13 +221,6 @@ func TestKeyDeduplication(t *testing.T) {
 }
 
 /******************** 辅助工具 ********************/
-
-// 实现一个无操作的 Tracer
-type noopTracer[K Key, V Value] struct{}
-
-func (t noopTracer[K, V]) TraceBatch(_ *gin.Context, _ []K) func() {
-	return func() {}
-}
 
 // 测试专用的 logger
 type testLogger struct{ t *testing.T }
