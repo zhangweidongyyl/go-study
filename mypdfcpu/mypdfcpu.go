@@ -23,3 +23,16 @@ func MergePdf(inFilePath, outFilePath string, cnt int) {
 	}
 	fmt.Println(time.Since(start))
 }
+
+func MergeA() string {
+	return fmt.Sprintf("%s-%s", "testA", MergeB())
+
+}
+func MergeB() string {
+	cValue := MergeC()
+	fmt.Printf("testB中testC()的返回值: %s\n", cValue) // 添加日志
+	return cValue + ":realB"
+}
+func MergeC() string {
+	return "realC"
+}
