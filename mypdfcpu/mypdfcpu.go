@@ -22,6 +22,11 @@ func MergePdf(inFilePath, outFilePath string, cnt int) {
 		panic(err)
 	}
 	fmt.Println(time.Since(start))
+	res, err := api.PageCountFile(outFile)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("totalPageCount is", res)
 }
 
 func MergeA() string {

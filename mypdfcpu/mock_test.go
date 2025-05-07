@@ -7,6 +7,12 @@ import (
 	"testing"
 )
 
+func TestAdd(t *testing.T) {
+	convey.Convey("TestGoMonkey1", t, func() {
+		Example()
+	})
+
+}
 func testA() string {
 	return fmt.Sprintf("%s-%s", "testA", testB())
 }

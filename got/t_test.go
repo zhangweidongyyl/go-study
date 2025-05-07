@@ -2,8 +2,9 @@ package got
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // 定义存储接口
@@ -49,6 +50,15 @@ func (s *RealStorage) GetUser(id string) (User, error) {
 
 func (s *RealStorage) SaveUser(user User) error {
 	// 真实数据库保存逻辑
+	return nil
+}
+
+type testStorage struct{}
+
+func (s *testStorage) GetUser(id string) (User, error) {
+	return User{ID: id, Name: "Test User", Age: 20}, nil
+}
+func (s *testStorage) SaveUser(user User) error {
 	return nil
 }
 
@@ -111,4 +121,12 @@ func TestUpdateUserAge_SaveError(t *testing.T) {
 	// 注意：这里需要根据业务逻辑调整测试数据
 	// 假设当ID为"error"时，SaveUser返回错误
 	assert.ErrorContains(t, err, "mock save error")
+}
+
+func TestUpdateUserAge_TestStorage(t *testing.T) {
+	testStorage := &testStorage{}
+	service := NewUserService(testStorage)
+
+	err := service.UpdateUserAge("test123", 30)
+	assert.NoError(t, err)
 }
