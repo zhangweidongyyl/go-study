@@ -31,11 +31,15 @@ func pxToMm(px float64) float64 {
 }
 
 // CreateEmptyPDFWithSize 创建一个指定大小的空页PDF文件
-func CreateEmptyPDFWithSize(outputPath string, width, height float64) error {
+func CreateEmptyPDFWithSize(outputPath string, width, height float64, needContert bool) error {
+	widthMm := width
+	heightMm := height
+	if needContert {
+		// 将像素转换为毫米
+		widthMm = pxToMm(width)
+		heightMm = pxToMm(height)
+	}
 
-	// 将像素转换为毫米
-	widthMm := pxToMm(width)
-	heightMm := pxToMm(height)
 	// 创建新的PDF文档，使用自定义大小（单位：毫米）
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr: "mm",
@@ -62,7 +66,12 @@ func Example() {
 	}
 
 	// 创建自定义大小的空页PDF (例如: 100x150 毫米)
-	if err := CreateEmptyPDFWithSize("custom.pdf", 719, 888); err != nil {
+	if err := CreateEmptyPDFWithSize("custom.pdf", 719, 888, true); err != nil {
+		fmt.Printf("创建自定义大小PDF失败: %v\n", err)
+		return
+	}
+
+	if err := CreateEmptyPDFWithSize("custom-new.pdf", 184.49, 260.01, false); err != nil {
 		fmt.Printf("创建自定义大小PDF失败: %v\n", err)
 		return
 	}

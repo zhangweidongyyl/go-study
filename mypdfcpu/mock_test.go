@@ -10,6 +10,7 @@ import (
 func TestAdd(t *testing.T) {
 	convey.Convey("TestGoMonkey1", t, func() {
 		Example()
+		//GetWidth()
 	})
 
 }
