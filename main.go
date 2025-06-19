@@ -1,17 +1,133 @@
 package main
 
 import (
-	"study.com/study/compress"
+	"fmt"
+	"github.com/spf13/cobra"
+	"os"
+	"path/filepath"
+	"strings"
+	"text/template"
 )
 
-func main() {
-	datas := []uint32{10, 11, 12, 12, 12, 15, 16, 16, 18, 15, 11, 11, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+var rootCmd = &cobra.Command{
+	Use:   "codegen",
+	Short: "练习处理器代码生成器",
+	Long:  `练习处理器代码生成器，用于生成标准的Handler和Executor代码。`,
+}
 
-	fileName := "test.md"
-	outputFileName := "test1.md"
-	compress.CreateFile(fileName, datas)
-	compress.StreamReadEncodeNoMemory(fileName, outputFileName)
-	compress.StreamReadDecodeNoMemory(outputFileName)
+func init() {
+	rootCmd.AddCommand(GenerateCmd)
+}
+
+var (
+	module string
+	scene  string
+	api    string
+)
+
+// GenerateCmd 生成处理器代码的命令
+var GenerateCmd = &cobra.Command{
+	Use:   "generate",
+	Short: "生成练习处理器代码",
+	Long: `生成练习处理器代码，包括Handler和Executor。
+示例：
+  go run main.go generate --module primary --scene homework --api getabstract`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := generateHandler(); err != nil {
+			fmt.Printf("生成代码失败: %v\n", err)
+			os.Exit(1)
+		}
+	},
+}
+
+func init() {
+	GenerateCmd.Flags().StringVarP(&module, "module", "m", "", "练习模块 (必需)")
+	GenerateCmd.Flags().StringVarP(&scene, "scene", "s", "", "练习场景 (必需)")
+	GenerateCmd.Flags().StringVarP(&api, "api", "a", "", "API名称 (必需)")
+
+	GenerateCmd.MarkFlagRequired("module")
+	GenerateCmd.MarkFlagRequired("scene")
+	GenerateCmd.MarkFlagRequired("api")
+}
+
+func generateHandler() error {
+	// 验证输入
+	if module == "" || scene == "" || api == "" {
+		return fmt.Errorf("module, scene 和 api 都是必需的")
+	}
+
+	// 创建目标目录
+	dir := filepath.Join("service", "practice", module, scene)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("创建目录失败: %v", err)
+	}
+
+	// 生成文件名
+	fileName := fmt.Sprintf("%s_%s_%s.go", module, scene, api)
+	filePath := filepath.Join(dir, fileName)
+
+	// 检查文件是否已存在
+	if _, err := os.Stat(filePath); err == nil {
+		return fmt.Errorf("文件已存在: %s", filePath)
+	}
+
+	// 准备模板数据
+	data := struct {
+		Module      string
+		Scene       string
+		Api         string
+		ModuleUpper string
+		SceneUpper  string
+		ApiUpper    string
+	}{
+		Module:      module,
+		Scene:       scene,
+		Api:         api,
+		ModuleUpper: strings.Title(module),
+		SceneUpper:  strings.Title(scene),
+		ApiUpper:    strings.Title(api),
+	}
+
+	// 创建文件
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("创建文件失败: %v", err)
+	}
+	defer file.Close()
+
+	// 解析并执行模板
+	tmpl, err := template.New("handler").Parse(handlerTemplate)
+	if err != nil {
+		return fmt.Errorf("解析模板失败: %v", err)
+	}
+
+	if err := tmpl.Execute(file, data); err != nil {
+		return fmt.Errorf("生成代码失败: %v", err)
+	}
+
+	fmt.Printf("成功生成文件: %s\n", filePath)
+	return nil
+}
+
+// 使用template.go中定义的模板
+const handlerTemplate = HandlerTemplate
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	//timeStr := "2025-01-01 00:00:00"
+	//t, _ := time.Parse("2006-01-02 15:04:05", timeStr)
+	//fmt.Println(t.Unix())
+	//
+	//datas := []uint32{10, 11, 12, 12, 12, 15, 16, 16, 18, 15, 11, 11, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	//
+	//fileName := "test.md"
+	//outputFileName := "test1.md"
+	//compress.CreateFile(fileName, datas)
+	//compress.StreamReadEncodeNoMemory(fileName, outputFileName)
+	//compress.StreamReadDecodeNoMemory(outputFileName)
 	//encodedResult := compress.RuneLengthEncode(datas)
 	//b := compress.EncodeToBinary(encodedResult)
 	//bres := compress.DecodeBinaryToDomains(b)

@@ -4,13 +4,16 @@ import (
 	"fmt"
 	"github.com/agiledragon/gomonkey/v2"
 	"github.com/smartystreets/goconvey/convey"
+	"strconv"
 	"testing"
 )
 
 func TestAdd(t *testing.T) {
 	convey.Convey("TestGoMonkey1", t, func() {
-		Example()
+		//Example()
 		//GetWidth()
+
+		fmt.Println(strconv.FormatInt(130735%20, 10))
 	})
 
 }
